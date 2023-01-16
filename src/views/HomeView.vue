@@ -14,27 +14,23 @@
       :english="item"
       v-for="(item, index) in setntenceList"
     />
-    {{ setntenceList }}
-    {{ demo }}
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, watch, reactive } from 'vue';
+import { ref, reactive, watchEffect } from 'vue';
 import VTranslateion from '@/components/VTranslateion.vue';
 
 const textInput = ref('');
-const demo = ref('');
 
 let setntenceList: string[] = reactive([]);
+
 // watch
-watch(textInput, (val) => {
-  demo.value = val;
-  console.log(val);
-  setntenceList = val
+watchEffect(() => {
+  const result = textInput.value
     .replace(/^\.+|\.+$/g, '')
     .split('.')
     .map((item) => item.trim() + '.');
-  console.log(setntenceList.length);
-  console.log(setntenceList);
+  setntenceList.length = 0;
+  setntenceList.push(...result);
 });
 </script>

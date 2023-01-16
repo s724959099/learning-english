@@ -7,6 +7,7 @@
         </v-card-title>
         <v-card-text>
           <v-word
+            class="font-size-1"
             :active="el.active"
             :word="el.word"
             :key="index"
@@ -21,15 +22,20 @@
         <v-card-title>
           <h1>Translation</h1>
         </v-card-title>
-        <v-card-text>{{ translatedSentence }}</v-card-text>
+        <v-card-text class="font-size-1">{{ translatedSentence }}</v-card-text>
       </v-card>
     </v-col>
   </v-row>
 </template>
+<style>
+.font-size-1 {
+  font-size: 1.5rem;
+}
+</style>
 <script lang="ts" setup>
 import VWord from '@/components/VWord.vue';
 import { computed, reactive, ref } from 'vue';
-import { watch } from 'vue';
+import { watchEffect } from 'vue';
 import axios from 'axios';
 
 function debounce<F extends (...params: any[]) => void>(fn: F, delay: number) {
@@ -80,8 +86,8 @@ const updateWatch = debounce((val) => {
   translateToChinese(val);
 }, 2000);
 // watch translatedSentence changed
-watch(activeEnglishSentence, (val) => {
-  // updateWatch(val);
+watchEffect(() => {
+  updateWatch(activeEnglishSentence.value);
 });
 
 function clickWord(index: number) {
