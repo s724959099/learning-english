@@ -1,11 +1,11 @@
 <template>
   <v-row>
-    <v-col cols="6">
+    <v-col cols="12">
       <v-card>
         <v-card-title>
-          <h1>English</h1>
+          <h1>Translation</h1>
         </v-card-title>
-        <v-card-text>
+        <v-card-text class="mt-2">
           <v-word
             class="font-size-1"
             :active="el.active"
@@ -15,13 +15,6 @@
             @mouseenter="clickWord(index)"
           />
         </v-card-text>
-      </v-card>
-    </v-col>
-    <v-col cols="6">
-      <v-card>
-        <v-card-title>
-          <h1>Translation</h1>
-        </v-card-title>
         <v-card-text class="font-size-1">{{ translatedSentence }}</v-card-text>
       </v-card>
     </v-col>
@@ -29,12 +22,12 @@
 </template>
 <style>
 .font-size-1 {
-  font-size: 1.5rem;
+  font-size: 1.5rem !important;
 }
 </style>
 <script lang="ts" setup>
 import VWord from '@/components/VWord.vue';
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { watchEffect } from 'vue';
 import axios from 'axios';
 
@@ -70,14 +63,14 @@ function translateToChinese(sourceText: string) {
 const props = defineProps<{
   english: string;
 }>();
-const words = reactive(
+const words = ref(
   props.english.split(' ').map((item) => {
     return { word: item, active: true };
   })
 );
 const translatedSentence = ref('');
 const activeEnglishSentence = computed(() => {
-  return words
+  return words.value
     .filter((item) => item.active)
     .map((item) => item.word)
     .join(' ');
@@ -85,12 +78,19 @@ const activeEnglishSentence = computed(() => {
 const updateWatch = debounce((val) => {
   translateToChinese(val);
 }, 2000);
-// watch translatedSentence changed
 watchEffect(() => {
   updateWatch(activeEnglishSentence.value);
 });
+watch(
+  () => props.english,
+  (value) => {
+    words.value = value.split(' ').map((item) => {
+      return { word: item, active: true };
+    });
+  }
+);
 
 function clickWord(index: number) {
-  words[index].active = !words[index].active;
+  words.value[index].active = !words.value[index].active;
 }
 </script>
